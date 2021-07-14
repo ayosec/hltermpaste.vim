@@ -96,7 +96,7 @@ function s:highlightregion(initial_pos, end_pos)
   call timer_start(g:hltermpaste_timeout, funcref("RemoveHighlights"))
 
   " Store the highlight positions for the HighlightTermPasteVisual command.
-  let b:hltermpaste_last_region = [a:initial_pos, a:end_pos]
+  let b:hltermpaste_last_region = [b:changedtick, a:initial_pos, a:end_pos]
 endfunction
 " }}}
 
@@ -106,8 +106,12 @@ function <SID>VisualLastRegion()
     return
   endif
 
-  call setpos("'<", b:hltermpaste_last_region[0])
-  call setpos("'>", b:hltermpaste_last_region[1])
+  if b:hltermpaste_last_region[0] != b:changedtick
+    return
+  endif
+
+  call setpos("'<", b:hltermpaste_last_region[1])
+  call setpos("'>", b:hltermpaste_last_region[2])
   normal gv
 endfunction
 
