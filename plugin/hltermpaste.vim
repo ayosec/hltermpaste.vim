@@ -20,19 +20,24 @@ if !exists("g:hltermpaste_match_group")
 endif
 " }}}
 
-" autocommands {{{
-augroup HighlightTermPaste
-  autocmd!
-  au OptionSet paste call <SID>PasteHandler()
-augroup END
+" Initialization {{{
+"
+" For Vim, track the changes on the &paste option.
+" For Neovim, install a paste handler.
+if has("nvim")
+  call luaeval('require("hltermpaste").setup()')
+else
+  augroup HighlightTermPaste
+    autocmd!
+    au OptionSet paste call <SID>PasteOptionEvent()
+  augroup END
+endif
 " }}}
 
-" <SID>PasteHandler() {{{
+" <SID>PasteOptionEvent() {{{
 "
 " Invoked when the &paste value is modified.
-"
-" The highlight is cancelled if it exceeds more than g:hltermpaste_timeout.
-function <SID>PasteHandler()
+function <SID>PasteOptionEvent()
   let current_mode = mode()
   if current_mode != "n" && current_mode != "i"
     return
